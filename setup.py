@@ -1,5 +1,6 @@
-from setuptools import setup
 from pathlib import Path
+
+from setuptools import setup
 
 project = 'xu'
 parent = Path(__file__).parent.resolve()
@@ -7,8 +8,8 @@ readme = (parent / 'README.md').read_text()
 
 setup(
 	name=project,
-	version='0.0.2',
-	description='Random utils',
+	version='0.1.4',
+	description=readme.splitlines()[2],
 	long_description=readme,
 	long_description_content_type='text/markdown',
 	url='https://github.com/onerbs/' + project,
