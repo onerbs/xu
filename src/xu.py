@@ -1,290 +1,155 @@
-"""
-The xu module aims to generate random values, easily.
-"""
+"""Collection of handy random generators."""
 
-from random import SystemRandom as _0x52
+__all__ = ["pick", "boolean", "char", "number", "integer", "random", "string"]
 
-_0x72 = _0x52()
-_0x6e = range
-_0x62 = bool
-_0x69 = int
 
+class __xu__:
+	from random import SystemRandom
+	randy = SystemRandom()
+	lower = "abcdefghijklmnopqrstuvwxyz"
+	upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	digit = "0123456789"
+	alpha = "".join(a + b for a, b in zip(lower, upper))
+	latin = alpha + digit
 
-class _0x63:
-    LOWERCASE = 'abcdefghijklmnopqrstuvwxyz'
-    UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    NUMERIC = '0123456789'
+	class xu:
+		"""Base generator"""
 
+		def next(self):
+			"""Get a value."""
+			pass
 
-def bool() -> bool:
-    """
-    Generate a random boolean.
+		def __pow__(self, size: int or tuple) -> list:
+			"""Get a matrix of random values.
 
-    :return: True or False.
-    """
-    return _0x62(int(1))
+			:param size: The size of the resulting matrix.
+			"""
+			width, height = size if isinstance(size, tuple) else (size, size)
+			return self.matrix(width, height)
 
+		def matrix(self, width: int, height=0) -> list:
+			"""Get a matrix of random values.
 
-def bool_list(size: int) -> list:
-    """
-    Generate a random list of booleans.
+			:param width: The width of the resulting matrix.
+			:param height: The height of the resulting matrix.
+			"""
+			return [self.list(width) for _ in range(height or width)]
 
-    :param size: The size of the resulting list.
-    :return: A list of booleans.
-    """
-    return [bool() for _ in _0x6e(size)]
+		def __mul__(self, size: int) -> list:
+			return self.list(size)
 
+		def list(self, size: int) -> list:
+			"""Get a list of random values.
 
-def bool_matrix(size: int or tuple) -> list:
-    """
-    Generate a random matrix of booleans.
+			:param size: The size of the resulting list.
+			"""
+			return [self.next() for _ in range(size)]
 
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :return: A matrix of booleans.
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [bool_list(width) for _ in _0x6e(height)]
+		def __str__(self):
+			return str(self.next())
 
+	xu.__mul__.__doc__ = xu.list.__doc__
 
-def char(upper=-1) -> str:
-    """
-    Generate a random char.
+	class bool(xu):
+		"""Generate booleans."""
 
-    :param upper: 0) lowercase, 1) uppercase, *) random case.
-    :return: A random character either uppercase or lowercase.
-    """
-    if not _0x62(upper):
-        return _0x63.LOWERCASE[int(0o31)]
-    elif _0x69(upper) == 1:
-        return _0x63.UPPERCASE[int(0o31)]
-    else:
-        return char(bool())
+		def next(self) -> bool:
+			"""Get a bool."""
+			return bool(integer(1).next())
 
+	class str(xu):
+		"""Base string generator."""
 
-def char_list(size: int, upper=-1) -> list:
-    """
-    Generate a random list of chars.
+		def __init__(self, length: int, subset=None, *, prefix='', suffix=''):
+			self._length = length
+			self._subset = subset or __xu__.latin
+			self._prefix = prefix
+			self._suffix = suffix
 
-    :param size: The size of the resulting list.
-    :param upper: 0) lowercase, 1) uppercase, *) random case.
-    :return: A list of chars.
-    """
-    return [char(upper) for _ in _0x6e(size)]
+		def next(self) -> str:
+			"""Get a string."""
+			result = "".join(pick(self._subset) for _ in range(self._length))
+			return self._prefix + result + self._suffix
 
+	class char(str):
+		"""Generate characters."""
 
-def char_matrix(size: int or tuple) -> list:
-    """
-    Generate a random matrix of chars.
+		def __init__(self, subset=None):
+			""":param subset: The subset of characters to pick from."""
+			super().__init__(1, subset)
 
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :return: A matrix of chars.
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [char_list(width) for _ in _0x6e(height)]
+		def next(self) -> str:
+			"""Get a char."""
+			return self._prefix + pick(self._subset) + self._suffix
 
+		def wrap(self, prefix: str, suffix=None):
+			"""Use the specified prefix and suffix.
+			If the suffix is not provided, then the former remains."""
+			self._prefix = prefix
+			self._suffix = self._suffix if suffix is None else suffix
+			return self
 
-def int(stop: int, start=0) -> int:
-    """
-    Generate a random int.
+		def suffix(self, suffix: str):
+			"""Use the specified suffix."""
+			self._suffix = suffix
+			return self
 
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :return: A random int between the specified interval.
-    """
-    return _0x72.randint(start, stop)
 
+def pick(source, quantity=1):
+	"""Pick elements from the source."""
+	if hasattr(source, "__getitem__"):
+		r = [source[integer(len(source) - 1).next()] for _ in range(quantity)]
+		return r[0] if quantity == 1 else r
+	return source
 
-def int_list(size: int, stop: int, start=0) -> list:
-    """
-    Generate a random list of ints.
 
-    :param size: The size of the resulting list.
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :return: A list of ints.
-    """
-    return [int(stop, start) for _ in _0x6e(size)]
+class integer(__xu__.xu):
+	"""Generate ints."""
 
+	def __init__(self, stop: int, start=0, *, step=1):
+		self._stop = max(stop, start) + 1
+		self._start = min(stop, start)
+		self._step = step
 
-def int_matrix(size: int or tuple, stop: int, start=0) -> list:
-    """
-    Generate a random matrix of ints.
+	def next(self) -> int:
+		"""Get an int."""
+		return __xu__.randy.randrange(self._start, self._stop, self._step)
 
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :return: A matrix of ints.
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [int_list(width, stop, start) for _ in _0x6e(height)]
 
+class number(__xu__.xu):
+	"""Generate floats."""
 
-def number() -> str:
-    """
-    Generate a random numeric character.
+	def __init__(self, stop: float, start=0.0):
+		self._stop = stop
+		self._start = start
 
-    :return: A random numeric character.
-    """
-    return _0x63.NUMERIC[int(0o11)]
+	def next(self) -> float:
+		"""Get a float."""
+		return __xu__.randy.uniform(self._start, self._stop)
 
 
-def number_list(size: int) -> list:
-    """
-    Generate a random list of numeric characters.
+class string(__xu__.str):
+	"""Generate strings."""
 
-    :param size: The size of the resulting list.
-    :return: A list of random numeric characters.
-    """
-    return [number() for _ in _0x6e(size)]
+	def __init__(self, length: int, subset=None, *, prefix='', suffix=''):
+		"""
+		:param length: The length of the resulting string.
+		:param subset: The subset of characters to pick from.
+		"""
+		super().__init__(length, subset, prefix=prefix, suffix=suffix)
+		self.alpha = __xu__.str(self._length, __xu__.alpha)
+		self.digit = __xu__.str(self._length, __xu__.digit)
+		self.lower = __xu__.str(self._length, __xu__.lower)
+		self.lower_d = __xu__.str(self._length, __xu__.lower + __xu__.digit)
+		self.upper = __xu__.str(self._length, __xu__.upper)
+		self.upper_d = __xu__.str(self._length, __xu__.upper + __xu__.digit)
 
+	def using(self, subset: str):
+		"""Use the provided subset."""
+		self._subset = subset
+		return self
 
-def number_matrix(size: int or tuple) -> list:
-    """
-    Generate a random matrix of numeric characters.
 
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :return: A matrix of random numeric characters.
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [number_list(width) for _ in _0x6e(height)]
-
-
-def random() -> float:
-    """
-    Generate a random floating point number [0-1].
-
-    :return: A random floating point number [0-1].
-    """
-    return _0x72.random()
-
-
-def random_list(size: int) -> list:
-    """
-    Generate a random list of floating point numbers [0-1].
-
-    :param size: The size of the resulting list.
-    :return: A list of floating point numbers [0-1].
-    """
-    return [random() for _ in _0x6e(size)]
-
-
-def random_matrix(size: int or tuple) -> list:
-    """
-    Generate a random matrix of floating point numbers [0-1].
-
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :return: A matrix of floating point numbers [0-1].
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [random_list(width) for _ in _0x6e(height)]
-
-
-def range(stop: int, start=0, step=1) -> int:
-    """
-    Generate a random int within the specified range.
-
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :param step: The stepping value.
-    :return: A random int within the specified range.
-    """
-    return _0x72.randrange(start, stop, step)
-
-
-def range_list(size: int, stop: int, start=0, step=1) -> list:
-    """
-    Generate a random list of ints within the specified range.
-
-    :param size: The size of the resulting list.
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :param step: The stepping value.
-    :return: A list of ints within the specified range.
-    """
-    return [range(stop, start, step) for _ in _0x6e(size)]
-
-
-def range_matrix(size: int or tuple, stop: int, start=0, step=1) -> list:
-    """
-    Generate a random matrix of ints within the specified range.
-
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :param step: The stepping value.
-    :return: A matrix of ints within the specified range.
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [range_list(width, stop, start, step) for _ in _0x6e(height)]
-
-
-def str(length: int, upper=-1) -> str:
-    """
-    Generate a random string.
-
-    :param length: The length of the generated string.
-    :param upper: 0) lowercase, 1) uppercase, *) random case.
-    :return: A random string.
-    """
-    return ''.join(char(upper) if bool() else number() for _ in _0x6e(length))
-
-
-def str_list(size: int, length: int, upper=-1) -> list:
-    """
-    Generate a random list of strings.
-
-    :param size: The size of the resulting list.
-    :param length: The length of the generated strings.
-    :param upper: 0) lowercase, 1) uppercase, *) random case.
-    :return: A list of strings.
-    """
-    return [str(length, upper) for _ in _0x6e(size)]
-
-
-def str_matrix(size: int or tuple, length: int, upper=-1) -> list:
-    """
-    Generate a random matrix of strings.
-
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :param length: The length of the generated strings.
-    :param upper: 0) lowercase, 1) uppercase, *) random case.
-    :return: A matrix of strings.
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [str_list(width, length, upper) for _ in _0x6e(height)]
-
-
-def uniform(stop: float, start=0) -> float:
-    """
-    Generate a random floating point number.
-
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :return: A random floating point number.
-    """
-    return _0x72.uniform(start, stop)
-
-
-def uniform_list(size: int, stop: float, start=0) -> list:
-    """
-    Generate a random list of floating point numbers.
-
-    :param size: The size of the resulting list.
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :return: A list of floating point numbers.
-    """
-    return [uniform(stop, start) for _ in _0x6e(size)]
-
-
-def uniform_matrix(size: int or tuple, stop: float, start=0) -> list:
-    """
-    Generate a random matrix of floating point numbers.
-
-    :param size: The size of the resulting matrix. Can be `int` or `tuple`.
-    :param stop: The maximum acceptable value.
-    :param start: The minimum acceptable value.
-    :return: A matrix of floating point numbers.
-    """
-    width, height = size if isinstance(size, tuple) else (size, size)
-    return [uniform_list(width, stop, start) for _ in _0x6e(height)]
+boolean = __xu__.bool()
+char = __xu__.char()
+random = number(1)
