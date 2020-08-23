@@ -8,7 +8,7 @@ readme = (parent / 'README.md').read_text()
 
 setup(
 	name=project,
-	version='0.1.4',
+	version='0.1.5',
 	description=readme.splitlines()[2],
 	long_description=readme,
 	long_description_content_type='text/markdown',
