@@ -13,24 +13,21 @@ Collection of handy random generators.
 ```python
 from xu import string
 
-for it in string(10).list(2):
-	print(it)
+
 print(string(10).lower)
 print(string(10).upper)
 print(string(10).digit)
 print(string(10).alpha)
-print(string(10).lower_d)
-print(string(10).upper_d)
+print(string(10).latin)
+print(string(10).list(2))
 ```
 
-	8lfMoAUnZz  # default (lower + upper + digit)
-	47Vw8Tai5Z  # default (lower + upper + digit)
-	qkjnhsadha  # lower
-	SEAHSVHGOZ  # upper
-	9933557070  # digit
-	TxIUNiaiPD  # alpha   (lower + upper)
-	h33jxxnfo9  # lower_d (lower + digit)
-	8ZOJKNP5RK  # upper_d (upper + digit)
+	eoqsalszaj
+	FCVYJZIDMY
+	6712277415
+	oTrbOHkUbd
+	NcrW4STecT
+	['euZY9gFrzx', '0AEepSNvAO']
 
 ----
 
