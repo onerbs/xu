@@ -137,17 +137,11 @@ class string(__xu__.str):
 		:param subset: The subset of characters to pick from.
 		"""
 		super().__init__(length, subset, prefix=prefix, suffix=suffix)
-		self.alpha = __xu__.str(self._length, __xu__.alpha)
-		self.digit = __xu__.str(self._length, __xu__.digit)
 		self.lower = __xu__.str(self._length, __xu__.lower)
-		self.lower_d = __xu__.str(self._length, __xu__.lower + __xu__.digit)
 		self.upper = __xu__.str(self._length, __xu__.upper)
-		self.upper_d = __xu__.str(self._length, __xu__.upper + __xu__.digit)
-
-	def using(self, subset: str):
-		"""Use the provided subset."""
-		self._subset = subset
-		return self
+		self.digit = __xu__.str(self._length, __xu__.digit)
+		self.alpha = __xu__.str(self._length, __xu__.alpha)
+		self.latin = __xu__.str(self._length, __xu__.latin)
 
 
 boolean = __xu__.bool()
