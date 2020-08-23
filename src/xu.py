@@ -71,9 +71,19 @@ class __xu__:
 			result = "".join(pick(self._subset) for _ in range(self._length))
 			return self._prefix + result + self._suffix
 
+		def using(self, subset: str):
+			"""Replace the subset with the provided one."""
+			self._subset = subset
+			return self
+
+		def extend(self, subset: str):
+			"""Extend the subset with the provided one."""
+			self._subset += subset
+			return self
+
+
 	class char(str):
 		"""Generate characters."""
-
 		def __init__(self, subset=None):
 			""":param subset: The subset of characters to pick from."""
 			super().__init__(1, subset)
