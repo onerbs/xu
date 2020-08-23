@@ -13,25 +13,26 @@ class __xu__:
 	latin = alpha + digit
 
 	class xu:
-		"""Base generator"""
-
+		"""Random values."""
 		def next(self):
-			"""Get a value."""
+			""":return: A random value."""
 			pass
 
 		def __pow__(self, size: int or tuple) -> list:
-			"""Get a matrix of random values.
-
+			"""
 			:param size: The size of the resulting matrix.
+
+			:return: A matrix of random values.
 			"""
 			width, height = size if isinstance(size, tuple) else (size, size)
 			return self.matrix(width, height)
 
 		def matrix(self, width: int, height=0) -> list:
-			"""Get a matrix of random values.
-
+			"""
 			:param width: The width of the resulting matrix.
 			:param height: The height of the resulting matrix.
+
+			:return: A matrix of random values.
 			"""
 			return [self.list(width) for _ in range(height or width)]
 
@@ -39,9 +40,10 @@ class __xu__:
 			return self.list(size)
 
 		def list(self, size: int) -> list:
-			"""Get a list of random values.
-
+			"""
 			:param size: The size of the resulting list.
+
+			:return: A list of random values.
 			"""
 			return [self.next() for _ in range(size)]
 
@@ -51,15 +53,13 @@ class __xu__:
 	xu.__mul__.__doc__ = xu.list.__doc__
 
 	class bool(xu):
-		"""Generate booleans."""
-
+		"""Random booleans."""
 		def next(self) -> bool:
-			"""Get a bool."""
+			""":return: Either True or False."""
 			return bool(integer(1).next())
 
 	class str(xu):
-		"""Base string generator."""
-
+		"""Random strings."""
 		def __init__(self, length: int, subset=None, *, prefix='', suffix=''):
 			self._length = length
 			self._subset = subset or __xu__.latin
@@ -67,8 +67,8 @@ class __xu__:
 			self._suffix = suffix
 
 		def next(self) -> str:
-			"""Get a string."""
-			result = "".join(pick(self._subset) for _ in range(self._length))
+			""":return: A random string."""
+			result = "".join(pick(self._subset, self._length))
 			return self._prefix + result + self._suffix
 
 		def using(self, subset: str):
@@ -83,13 +83,13 @@ class __xu__:
 
 
 	class char(str):
-		"""Generate characters."""
+		"""Random characters."""
 		def __init__(self, subset=None):
 			""":param subset: The subset of characters to pick from."""
 			super().__init__(1, subset)
 
 		def next(self) -> str:
-			"""Get a char."""
+			""":return: A random character."""
 			return self._prefix + pick(self._subset) + self._suffix
 
 		def wrap(self, prefix: str, suffix=None):
@@ -106,41 +106,38 @@ class __xu__:
 
 
 def pick(source, quantity=1):
-	"""Pick elements from the source."""
-	if hasattr(source, "__getitem__"):
+	"""Pick N elements from the source."""
+	if hasattr(source, '__getitem__'):
 		r = [source[integer(len(source) - 1).next()] for _ in range(quantity)]
 		return r[0] if quantity == 1 else r
 	return source
 
 
 class integer(__xu__.xu):
-	"""Generate ints."""
-
+	"""Random integers."""
 	def __init__(self, stop: int, start=0, *, step=1):
-		self._stop = max(stop, start) + 1
 		self._start = min(stop, start)
+		self._stop = max(stop, start) + 1
 		self._step = step
 
 	def next(self) -> int:
-		"""Get an int."""
+		""":return: A random integer in the specified range."""
 		return __xu__.randy.randrange(self._start, self._stop, self._step)
 
 
 class number(__xu__.xu):
-	"""Generate floats."""
-
+	"""Random floats."""
 	def __init__(self, stop: float, start=0.0):
-		self._stop = stop
 		self._start = start
+		self._stop = stop
 
 	def next(self) -> float:
-		"""Get a float."""
+		""":return: A random float in the specified range."""
 		return __xu__.randy.uniform(self._start, self._stop)
 
 
 class string(__xu__.str):
-	"""Generate strings."""
-
+	"""Random strings."""
 	def __init__(self, length: int, subset=None, *, prefix='', suffix=''):
 		"""
 		:param length: The length of the resulting string.
