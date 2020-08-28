@@ -8,7 +8,7 @@ readme = (parent / 'README.md').read_text()
 
 setup(
 	name=project,
-	version='0.1.5',
+	version='0.2.0',
 	description=readme.splitlines()[2],
 	long_description=readme,
 	long_description_content_type='text/markdown',
@@ -21,13 +21,10 @@ setup(
 		'Intended Audience :: Developers',
 		'License :: OSI Approved :: MIT License',
 		'Operating System :: OS Independent',
-		'Programming Language :: Python :: 3.6',
-		'Programming Language :: Python :: 3.7',
 		'Programming Language :: Python :: 3.8',
 		'Programming Language :: Python :: 3.9',
 		'Topic :: Software Development :: Libraries :: Python Modules',
 	],
-	keywords='random generator',
-	package_dir={'': 'src'},
-	py_modules=[project],
+	keywords='random generator tool',
+	packages=[project],
 )
