@@ -1,5 +1,4 @@
 """Collection of handy random generators."""
-
 __all__ = ["pick", "boolean", "char", "number", "integer", "random", "string"]
 
 
@@ -10,10 +9,12 @@ class __xu__:
 	upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	digit = "0123456789"
 	alpha = "".join(a + b for a, b in zip(lower, upper))
-	latin = alpha + digit
+	latin = digit + alpha
+	hex = digit + alpha[:12]
 
 	class xu:
 		"""Random values."""
+
 		def next(self):
 			""":return: A random value."""
 			pass
@@ -54,13 +55,15 @@ class __xu__:
 
 	class bool(xu):
 		"""Random booleans."""
+
 		def next(self) -> bool:
 			""":return: Either True or False."""
 			return bool(integer(1).next())
 
 	class str(xu):
 		"""Random strings."""
-		def __init__(self, length: int, subset=None, *, prefix='', suffix=''):
+
+		def __init__(self, length: int, subset: str = None, /, prefix='', suffix=''):
 			self._length = length
 			self._subset = subset or __xu__.latin
 			self._prefix = prefix
@@ -81,10 +84,10 @@ class __xu__:
 			self._subset += subset
 			return self
 
-
 	class char(str):
 		"""Random characters."""
-		def __init__(self, subset=None):
+
+		def __init__(self, subset: str = None):
 			""":param subset: The subset of characters to pick from."""
 			super().__init__(1, subset)
 
@@ -115,6 +118,7 @@ def pick(source, quantity=1):
 
 class integer(__xu__.xu):
 	"""Random integers."""
+
 	def __init__(self, stop: int, start=0, *, step=1):
 		self._start = min(stop, start)
 		self._stop = max(stop, start) + 1
@@ -127,6 +131,7 @@ class integer(__xu__.xu):
 
 class number(__xu__.xu):
 	"""Random floats."""
+
 	def __init__(self, stop: float, start=0.0):
 		self._start = start
 		self._stop = stop
@@ -138,17 +143,25 @@ class number(__xu__.xu):
 
 class string(__xu__.str):
 	"""Random strings."""
-	def __init__(self, length: int, subset=None, *, prefix='', suffix=''):
+
+	def __init__(self, length: int, subset: str = None, /, prefix='', suffix=''):
 		"""
 		:param length: The length of the resulting string.
 		:param subset: The subset of characters to pick from.
 		"""
 		super().__init__(length, subset, prefix=prefix, suffix=suffix)
-		self.lower = __xu__.str(self._length, __xu__.lower)
-		self.upper = __xu__.str(self._length, __xu__.upper)
-		self.digit = __xu__.str(self._length, __xu__.digit)
-		self.alpha = __xu__.str(self._length, __xu__.alpha)
-		self.latin = __xu__.str(self._length, __xu__.latin)
+		self.lower = __xu__.str(self._length, __xu__.lower, prefix, suffix)
+		self.upper = __xu__.str(self._length, __xu__.upper, prefix, suffix)
+		self.digit = __xu__.str(self._length, __xu__.digit, prefix, suffix)
+		self.alpha = __xu__.str(self._length, __xu__.alpha, prefix, suffix)
+
+		self.latin = __xu__.str(self._length, __xu__.latin, prefix, suffix)
+		self.latin_lower = __xu__.str(self._length, __xu__.digit + __xu__.lower, prefix, suffix)
+		self.latin_upper = __xu__.str(self._length, __xu__.digit + __xu__.upper, prefix, suffix)
+
+		self.hex = __xu__.str(self._length, __xu__.hex, prefix, suffix)
+		self.hex_lower = __xu__.str(self._length, __xu__.digit + __xu__.lower[:6], prefix, suffix)
+		self.hex_upper = __xu__.str(self._length, __xu__.digit + __xu__.upper[:6], prefix, suffix)
 
 
 boolean = __xu__.bool()
